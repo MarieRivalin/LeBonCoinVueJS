@@ -1,0 +1,34 @@
+@import './base.css';
+
+:root {
+  --orange: #ec5a13;
+  --beige: #ffe9de;
+  --black: #152233;
+  --dark-grey: #627c93;
+  --grey-med: #e6eaee;
+  --grey-light: #f4f9fe;
+  --blue-dark: #094171;
+  --brown: #89380f;
+  --header-height: 110px;
+  --footer-height: 80px;
+}
+body {
+  font-family: 'nunito sans', sans-serif;
+}
+main {
+  margin-top: var(--header-height);
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.container {
+  width: 1055px;
+  margin: 0 auto;
+  height: 100%;
+}
+button {
+  font-size: inherit;
+  font-family: inherit;
+}
