@@ -1,3 +1,4 @@
+<!-- eslint-disable no-undef -->
 <!-- eslint-disable no-unused-vars -->
 <script setup>
 import { ref, inject } from 'vue'
@@ -34,7 +35,12 @@ const handleSubmit = async () => {
         }
       )
       console.log('response >>>>', data)
-      GlobalStore.changeUserInfos({ username: data.user.username, token: data.jwt })
+      GlobalStore.changeUserInfos({
+        username: data.user.username,
+        token: data.jwt,
+        id: data.user.id
+      })
+      $cookies.set('userInfos', { username: data.user.username, token: data.jwt, id: data.user.id })
 
       console.log('router push')
       router.push({ name: 'home' })

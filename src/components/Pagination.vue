@@ -11,6 +11,7 @@ const changePage = (num) => {
   delete queries.numOfPages
 
   queries.page = num
+
   router.push({ name: 'home', query: queries })
 }
 </script>
@@ -25,10 +26,11 @@ const changePage = (num) => {
     <div>
       <p
         v-for="num in numOfPages"
-        @click="changePage(num)"
+        v-bind:key="num"
         :class="{
           selected: num === page
         }"
+        @click="changePage(num)"
       >
         {{ num }}
       </p>

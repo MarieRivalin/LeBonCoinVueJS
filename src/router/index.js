@@ -1,4 +1,6 @@
+/* eslint-disable no-unused-vars */
 import { createRouter, createWebHistory } from 'vue-router'
+import { inject } from 'vue'
 import HomeView from '../views/HomeView.vue'
 import SignupView from '@/views/SignupView.vue'
 import LoginView from '@/views/LoginView.vue'
@@ -35,8 +37,24 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView
+    },
+    {
+      path: '/publish',
+      name: 'publish',
+      component: () => import('../views/PublishView.vue'),
+      meta: { requireAuth: true }
     }
   ]
+})
+
+router.beforeEach((to, from) => {
+  const GlobalStore = inject('GlobalStore')
+
+  // console.log('test >>>', GlobalStore.userInfos.value)
+
+  if (to.meta.requireAuth && !GlobalStore.userInfos.value?.token) {
+    return { name: 'login' }
+  }
 })
 
 export default router
