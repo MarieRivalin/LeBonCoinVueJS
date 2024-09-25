@@ -17,6 +17,7 @@ console.log(GlobalStore.userInfos)
 const DisconnectUser = () => {
   GlobalStore.changeUserInfos(null)
   $cookies.remove('userInfos')
+  router.push({ name: 'home' })
 }
 
 const handleSubmit = () => {

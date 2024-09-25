@@ -18,7 +18,8 @@ import {
   faCheckDouble,
   faAngleLeft,
   faAngleRight,
-  faArrowRight
+  faArrowRight,
+  faCamera
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -45,7 +46,8 @@ library.add(
   faArrowRight,
   faEyeSlash,
   faEye,
-  faAngleLeft
+  faAngleLeft,
+  faCamera
 )
 
 const app = createApp(App).component('font-awesome-icon', FontAwesomeIcon)

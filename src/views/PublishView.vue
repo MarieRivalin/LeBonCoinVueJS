@@ -1,45 +1,79 @@
 <script setup>
-import { ref, inject } from 'vue'
+import { ref, inject, computed } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
 const GlobalStore = inject('GlobalStore')
+const router = useRouter()
 
 const title = ref('')
 const description = ref('')
 const price = ref(null)
 const pictures = ref(null)
+const errorMessage = ref('')
+const isCreating = ref(false)
 
 const handleSubmit = async () => {
+  isCreating.value = true
   try {
-    const formData = new FormData()
-    for (const key in pictures.value) {
-      if (Object.hasOwnProperty.call(pictures.value, key)) {
-        formData.append('files.pictures', pictures.value[key])
-      }
-    }
-    const stringifiedInfos = JSON.stringify({
-      title: title.value,
-      description: description.value,
-      price: price.value,
-      ownner: GlobalStore.userInfos.value.id
-    })
-
-    formData.append('data', stringifiedInfos)
-
-    const { data } = await axios.post(
-      'https://site--strapileboncoin--2m8zk47gvydr.code.run/api/offers',
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${GlobalStore.userInfos.value.token}`
+    if (title.value && description.value && price.value && pictures.value) {
+      const formData = new FormData()
+      for (const key in pictures.value) {
+        if (Object.hasOwnProperty.call(pictures.value, key)) {
+          formData.append('files.pictures', pictures.value[key])
         }
       }
-    )
+      const stringifiedInfos = JSON.stringify({
+        title: title.value,
+        description: description.value,
+        price: price.value,
+        owner: GlobalStore.userInfos.value.id
+      })
 
-    console.log('data>>>', data)
+      formData.append('data', stringifiedInfos)
+
+      const { data } = await axios.post(
+        'https://site--strapileboncoin--2m8zk47gvydr.code.run/api/offers',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${GlobalStore.userInfos.value.token}`
+          }
+        }
+      )
+
+      console.log('data>>>', data)
+      router.push({ name: 'offer', params: { id: data.data.id } })
+    } else {
+      errorMessage.value = 'Veuillez remplir tous les champs'
+    }
   } catch (error) {
     console.log(error)
+  }
+  isCreating.value = false
+}
+
+const imagesPreview = computed(() => {
+  const tab = []
+
+  for (const key in pictures.value) {
+    if (Object.hasOwnProperty.call(pictures.value, key)) {
+      tab.push(URL.createObjectURL(pictures.value[key]))
+    }
+  }
+  return tab
+})
+
+const selectPictures = (event) => {
+  errorMessage.value = ''
+
+  const numOfFiles = event.target.files.length
+
+  if (numOfFiles <= 10) {
+    pictures.value = event.target.files
+  } else {
+    errorMessage.value = '10 photos maximum'
   }
 }
 </script>
@@ -51,7 +85,13 @@ const handleSubmit = async () => {
 
       <form @submit.prevent="handleSubmit">
         <label for="title">Titre de l'annonce</label
-        ><input type="text" name="title" id="title" v-model="title" />
+        ><input
+          type="text"
+          name="title"
+          id="title"
+          v-model="title"
+          @input="() => (errorMessage = '')"
+        />
         <p>Vous n'avez pas besoin de mentionner « Achat » ou « Vente » ici.</p>
 
         <label for="description">Description de l'annonce : </label
@@ -61,6 +101,7 @@ const handleSubmit = async () => {
           cols="30"
           rows="10"
           v-model="description"
+          @input="() => (errorMessage = '')"
         ></textarea>
         <p>
           Nous vous rappelons que la vente de contrefaçons est interdite. Nous vous invitons à
@@ -72,22 +113,152 @@ const handleSubmit = async () => {
         </p>
 
         <label for="price">Votre prix de vente</label>
-        <div>
-          <input type="number" name="price" id="price" v-model="price" />
+        <div class="priceBloc">
+          <input
+            type="number"
+            name="price"
+            id="price"
+            v-model="price"
+            @input="() => (errorMessage = '')"
+          />
           <p>€</p>
         </div>
+        <label class="fileInput" for="pictures">
+          <font-awesome-icon :icon="['fas', 'camera']" />
+          <span>Sélectionnez jusqu'à 10 photos</span>
+        </label>
 
-        <input
-          type="file"
-          name="pictures"
-          id="pictures"
-          multiple
-          @input="(event) => (pictures = event.target.files)"
-        />
-        <button>Déposer mon annonce</button>
+        <input type="file" name="pictures" id="pictures" multiple @input="selectPictures" />
+
+        <div class="previews">
+          <img v-for="url in imagesPreview" :src="url" alt="" v-bind:key="url" />
+        </div>
+
+        <p v-if="isCreating">Création en cours...</p>
+        <button v-else>Déposer mon annonce</button>
+
+        <p v-if="errorMessage" class="errorMessage">{{ errorMessage }}</p>
       </form>
     </div>
   </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+main {
+  background-color: var(--grey-light);
+  padding: 40px 0;
+}
+.container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 20px;
+}
+h1 {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+form {
+  /* width: 770px; */
+  display: flex;
+  flex-direction: column;
+}
+label {
+  margin: 30px 0 10px 0;
+}
+p {
+  font-size: 12px;
+  width: 770px;
+  color: var(--dark-grey);
+  margin-top: 5px;
+}
+input,
+textarea {
+  border: 1px solid var(--dark-grey);
+  border-radius: 15px;
+  width: 770px;
+}
+input[type='text'] {
+  height: 45px;
+}
+.priceBloc {
+  height: 45px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+.priceBloc input {
+  width: 190px;
+  height: 100%;
+  border: 1px solid var(--dark-grey);
+  border-radius: 15px 0 0 15px;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.priceBloc p {
+  width: 45px;
+  height: 100%;
+  margin-top: 0;
+  font-size: 16px;
+  border: 1px solid var(--dark-grey);
+  border-radius: 0 15px 15px 0;
+  border-left: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+input[type='file'] {
+  display: none;
+}
+.fileInput {
+  border: 1px solid black;
+  border-radius: 15px;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  color: var(--blue-dark);
+}
+.fileInput svg {
+  font-size: 28px;
+}
+.fileInput span {
+  text-align: center;
+}
+button {
+  color: white;
+  background-color: var(--orange);
+  border-radius: 15px;
+  padding: 10px 15px;
+  border: none;
+  align-self: flex-end;
+  margin-top: 40px;
+}
+.previews {
+  /* border: 1px solid red; */
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.previews img {
+  border-radius: 10px;
+  object-fit: cover;
+  width: calc((100% - 40px) / 5);
+  aspect-ratio: 1/1;
+}
+.errorMessage {
+  font-size: 16px;
+  color: var(--orange);
+  text-align: center;
+}
+</style>

@@ -14,7 +14,7 @@ onMounted(async () => {
     const { data } = await axios.get(
       `https://site--strapileboncoin--2m8zk47gvydr.code.run/api/offers/${props.id}?populate[0]=pictures&populate[1]=owner.avatar`
     )
-    console.log('Response offerview', data.data.attributes.owner.data.attributes.username)
+    //console.log('Response offerview', data.data.attributes.owner.data.attributes.username)
 
     offerInfos.value = data.data
   } catch (error) {
@@ -72,6 +72,7 @@ const cycleList = computed(() => {
         <div class="owner">
           <div>
             <img
+              v-if="offerInfos.attributes.owner.data.attributes.avatar.data"
               :src="offerInfos.attributes.owner.data.attributes.avatar.data.attributes.url"
               alt=""
             />
@@ -95,6 +96,7 @@ main {
   min-height: calc(100vh - var(--header-height) - var(--footer-height));
 }
 .container {
+  padding-top: 40px;
   display: flex;
   gap: 20px;
 }

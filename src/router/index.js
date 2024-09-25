@@ -53,7 +53,7 @@ router.beforeEach((to, from) => {
   // console.log('test >>>', GlobalStore.userInfos.value)
 
   if (to.meta.requireAuth && !GlobalStore.userInfos.value?.token) {
-    return { name: 'login' }
+    return { name: 'login', query: { redirect: to.name } }
   }
 })
 
