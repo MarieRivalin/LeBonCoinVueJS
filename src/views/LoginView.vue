@@ -23,7 +23,7 @@ const handleSubmit = async () => {
         'https://site--strapileboncoin--2m8zk47gvydr.code.run/api/auth/local',
         { identifier: email.value, password: password.value }
       )
-      console.log('response >>>>', data)
+      // console.log('response >>>>', data)
       GlobalStore.changeUserInfos({
         username: data.user.username,
         token: data.jwt,
@@ -32,7 +32,7 @@ const handleSubmit = async () => {
 
       $cookies.set('userInfos', { username: data.user.username, token: data.jwt, id: data.user.id })
 
-      router.push({ name: route.query.redirect || 'home' })
+      router.push({ path: route.query.redirect || '/' })
     } catch (error) {
       console.log('error>>>>', error)
       errorMessage.value = 'Un problème est survenu, veuillez essayer à nouveau'

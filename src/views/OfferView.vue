@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
+import { RouterLink } from 'vue-router'
 import axios from 'axios'
 import { useCycleList } from '@vueuse/core'
 
@@ -85,7 +86,14 @@ const cycleList = computed(() => {
           <p><font-awesome-icon :icon="['far', 'clock']" />Répond généralement en 1 heure</p>
         </div>
 
-        <div class="btnPart"><button>Acheter</button> <button>Message</button></div>
+        <div class="btnPart">
+          <button>
+            <RouterLink :to="{ name: 'payment', params: { id: offerInfos.id } }"
+              >Acheter</RouterLink
+            >
+          </button>
+          <button>Message</button>
+        </div>
       </div>
     </div>
   </main>

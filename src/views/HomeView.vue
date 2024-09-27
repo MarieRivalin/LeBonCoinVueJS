@@ -29,7 +29,7 @@ onMounted(() => {
         `https://site--strapileboncoin--2m8zk47gvydr.code.run/api/offers?populate[0]=pictures&populate[1]=owner.avatar${priceFilters}&sort=${props.sort}&filters[title][$containsi]=${props.title}&pagination[page]=${props.page}&pagination[pageSize]=10`
       )
 
-      console.log('data>>>>', data)
+      //console.log('data>>>>', data)
 
       offersList.value = data.data
       numOfPages.value = data.meta.pagination.pageCount
