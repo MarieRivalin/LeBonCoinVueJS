@@ -5,6 +5,8 @@ import HomeView from '../views/HomeView.vue'
 import SignupView from '@/views/SignupView.vue'
 import LoginView from '@/views/LoginView.vue'
 import PaymentView from '@/views/PaymentView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
+import ProfileView from '@/views/ProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +53,17 @@ const router = createRouter({
       props: true,
       meta: { requireAuth: true },
       component: PaymentView
+    },
+    {
+      path: '/:catchAll(.*)',
+      name: 'notfound',
+      component: NotFoundView
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      meta: { requireAuth: true },
+      component: ProfileView
     }
   ]
 })
